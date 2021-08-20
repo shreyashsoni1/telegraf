@@ -244,8 +244,7 @@ func (m *Win_PerfCounters) SampleConfig() string {
 	return sampleConfig
 }
 
-func (m *Win_PerfCounters) addCounterToQuery(counterPath string) (PDH_HCOUNTER, error)
-{
+func (m *Win_PerfCounters) addCounterToQuery(counterPath string) (PDH_HCOUNTER, error) {
 	var err error
 	var counterHandle PDH_HCOUNTER
 	if !m.query.IsVistaOrNewer() {
