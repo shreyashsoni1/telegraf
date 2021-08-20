@@ -244,8 +244,8 @@ func (m *Win_PerfCounters) SampleConfig() string {
 	return sampleConfig
 }
 
-//objectName string, counter string, instance string, measurement string, include_total bool
-func (m *Win_PerfCounters) AddItem(counterPath string, objectName string, instance string, counterName string, measurement string, includeTotal bool) error {
+func (m *Win_PerfCounters) addCounterToQuery(counterPath string) (PDH_HCOUNTER, error)
+{
 	var err error
 	var counterHandle PDH_HCOUNTER
 	if !m.query.IsVistaOrNewer() {
@@ -258,8 +258,17 @@ func (m *Win_PerfCounters) AddItem(counterPath string, objectName string, instan
 		if err != nil {
 			return err
 		}
-
 	}
+
+	return counterHandle, nil
+}
+
+
+//objectName string, counter string, instance string, measurement string, include_total bool
+func (m *Win_PerfCounters) AddItem(counterPath string, objectName string, instance string, counterName string, measurement string, includeTotal bool) error {
+	var err error
+	var counterHandle PDH_HCOUNTER
+	counterHandle, err = m.addCounterToQuery(counterPath)
 
 	if m.UseWildcardsExpansion {
 		origInstance := instance
@@ -274,7 +283,10 @@ func (m *Win_PerfCounters) AddItem(counterPath string, objectName string, instan
 
 		for _, counterPath := range counters {
 			var err error
-			counterHandle, err := m.query.AddCounterToQuery(counterPath)
+			counterHandle, err := m.addCounterToQuery(counterPath)
+			if err != nil {
+				return err
+			}
 
 			objectName, instance, counterName, err = extractCounterInfoFromCounterPath(counterPath)
 			if err != nil {
