@@ -250,18 +250,17 @@ func (m *Win_PerfCounters) addCounterToQuery(counterPath string) (PDH_HCOUNTER, 
 	if !m.query.IsVistaOrNewer() {
 		counterHandle, err = m.query.AddCounterToQuery(counterPath)
 		if err != nil {
-			return err
+			return err, nil
 		}
 	} else {
 		counterHandle, err = m.query.AddEnglishCounterToQuery(counterPath)
 		if err != nil {
-			return err
+			return err, nil
 		}
 	}
 
 	return counterHandle, nil
 }
-
 
 //objectName string, counter string, instance string, measurement string, include_total bool
 func (m *Win_PerfCounters) AddItem(counterPath string, objectName string, instance string, counterName string, measurement string, includeTotal bool) error {
